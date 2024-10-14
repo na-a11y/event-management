@@ -1,14 +1,14 @@
-// src/components/AddData.js
-import React, { useState, useEffect } from 'react';
-import { database} from '../appwrite'; // Import Appwrite setup
+import React, { useState } from 'react';
+import { database } from '../appwrite'; // Import Appwrite setup
 import './AddData.css'; // AddData styles
 
 const AddData = () => {
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    dob: '',
-    city: '',
+    eventName: '',
+    eventOrganizer: '',
+    eventDate: '',
+    eventDescription: '',
+    eventStartTime: '',
   });
 
   const handleChange = (e) => {
@@ -24,22 +24,53 @@ const AddData = () => {
         'unique()',
         formData
       );
-      alert('Data added successfully!');
+      alert('Event added successfully!');
     } catch (error) {
-      console.error('Error adding data:', error);
-      alert('Failed to add data.');
+      console.error('Error adding event:', error);
+      alert('Failed to add event.');
     }
   };
 
   return (
     <div className="add-data-container">
-      <h2>Add User Data</h2>
+      <br></br>
+      <br></br>
+      <h2>Add Event</h2>
       <form onSubmit={handleSubmit} className="data-form">
-        <input type="text" name="firstName" placeholder="First Name" onChange={handleChange} required />
-        <input type="text" name="lastName" placeholder="Last Name" onChange={handleChange} required />
-        <input type="date" name="dob" onChange={handleChange} required />
-        <input type="text" name="city" placeholder="City" onChange={handleChange} required />
-        <button type="submit">Add Data</button>
+        <input
+          type="text"
+          name="eventName"
+          placeholder="Event Name"
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="text"
+          name="eventOrganizer"
+          placeholder="Event Organizer"
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="date"
+          name="eventDate"
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="text"
+          name="eventDescription"
+          placeholder="Event Description"
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="time"
+          name="eventStartTime"
+          onChange={handleChange}
+          required
+        />
+        <button type="submit">Add Event</button>
       </form>
     </div>
   );

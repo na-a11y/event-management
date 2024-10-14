@@ -1,19 +1,18 @@
-// src/components/ShowData.js
 import React, { useState, useEffect } from 'react';
 import { database } from '../appwrite'; // Import Appwrite services
 import './ShowData.css'; // Import CSS for styling
 
 const ShowData = () => {
   const [data, setData] = useState([]);
-  const [editingId, setEditingId] = useState(null); // Track the row being edited
+  const [editingId, setEditingId] = useState(null); // Track the event being edited
   const [editFormData, setEditFormData] = useState({
-    firstName: '',
-    lastName: '',
-    dob: '',
-    city: '',
+    eventName: '',
+    eventOrganizer: '',
+    eventDate: '',
+    eventDescription: '',
+    eventStartTime: '',
   });
 
-  // Fetch all documents from the Appwrite collection
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -23,128 +22,119 @@ const ShowData = () => {
         );
         setData(response.documents);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Error fetching events:', error);
       }
     };
     fetchData();
   }, []);
 
-  // Handle deleting a document
   const handleDelete = async (id) => {
     try {
       await database.deleteDocument('670ce7790018824faa22', '670ce788000d3b49762d', id);
       setData(data.filter((doc) => doc.$id !== id));
     } catch (error) {
-      console.error('Error deleting data:', error);
+      console.error('Error deleting event:', error);
     }
   };
 
-  // Start editing a row by populating the form with its data
   const handleEditClick = (doc) => {
     setEditingId(doc.$id);
     setEditFormData({
-      firstName: doc.firstName,
-      lastName: doc.lastName,
-      dob: doc.dob,
-      city: doc.city,
+      eventName: doc.eventName,
+      eventOrganizer: doc.eventOrganizer,
+      eventDate: doc.eventDate,
+      eventDescription: doc.eventDescription,
+      eventStartTime: doc.eventStartTime,
     });
   };
 
-  // Handle changes in the edit form inputs
   const handleEditChange = (e) => {
     setEditFormData({ ...editFormData, [e.target.name]: e.target.value });
   };
 
-  // Save the edited data by updating the document in Appwrite
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     try {
       await database.updateDocument(
         '670ce7790018824faa22', // Database ID
         '670ce788000d3b49762d', // Collection ID
-        editingId,              // Document ID
-        editFormData            // Updated data
+        editingId,
+        editFormData
       );
-      alert('Data updated successfully!');
-
-      // Update local state to reflect changes
+      alert('Event updated successfully!');
       setData(data.map((doc) => (doc.$id === editingId ? { ...doc, ...editFormData } : doc)));
-
-      // Clear edit state
       setEditingId(null);
-      setEditFormData({ firstName: '', lastName: '', dob: '', city: '' });
     } catch (error) {
-      console.error('Error updating data:', error);
-      alert('Failed to update data.');
+      console.error('Error updating event:', error);
+      alert('Failed to update event.');
     }
   };
 
   return (
     <div className="show-data-container">
-      <h2>User Data</h2>
-      <table className="data-table">
-        <thead>
-          <tr>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>DOB</th>
-            <th>City</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((doc) => (
-            <tr key={doc.$id}>
-              <td>{doc.firstName}</td>
-              <td>{doc.lastName}</td>
-              <td>{doc.dob}</td>
-              <td>{doc.city}</td>
-              <td>
-                <button onClick={() => handleEditClick(doc)}>Edit</button>
-                <button onClick={() => handleDelete(doc.$id)}>Delete</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <h2>Event Data</h2>
+      <div className="cards-container">
+        {data.map((doc) => (
+          <div key={doc.$id} className="card">
+            <h3>{doc.eventName}</h3>
+            <p><strong>Organizer:</strong> {doc.eventOrganizer}</p>
+            <p><strong>Date:</strong> {doc.eventDate}</p>
+            <p><strong>Description:</strong> {doc.eventDescription}</p>
+            <p><strong>Start Time:</strong> {doc.eventStartTime}</p>
+            <div className="button-container">
+              <button onClick={() => handleEditClick(doc)}>Edit</button>
+              <button onClick={() => handleDelete(doc.$id)}>Delete</button>
+            </div>
+          </div>
+        ))}
+      </div>
 
       {editingId && (
         <div className="edit-form-container">
-          <h3>Edit Data</h3>
           <form onSubmit={handleEditSubmit} className="edit-form">
+            <h3>Edit Event</h3>
             <input
               type="text"
-              name="firstName"
-              value={editFormData.firstName}
+              name="eventName"
+              value={editFormData.eventName}
               onChange={handleEditChange}
               required
-              placeholder="First Name"
+              placeholder="Event Name"
             />
             <input
               type="text"
-              name="lastName"
-              value={editFormData.lastName}
+              name="eventOrganizer"
+              value={editFormData.eventOrganizer}
               onChange={handleEditChange}
               required
-              placeholder="Last Name"
+              placeholder="Event Organizer"
             />
             <input
               type="date"
-              name="dob"
-              value={editFormData.dob}
+              name="eventDate"
+              value={editFormData.eventDate}
               onChange={handleEditChange}
               required
             />
             <input
               type="text"
-              name="city"
-              value={editFormData.city}
+              name="eventDescription"
+              value={editFormData.eventDescription}
               onChange={handleEditChange}
               required
-              placeholder="City"
+              placeholder="Event Description"
             />
-            <button type="submit">Save</button>
-            <button type="button" onClick={() => setEditingId(null)}>Cancel</button>
+            <input
+              type="time"
+              name="eventStartTime"
+              value={editFormData.eventStartTime}
+              onChange={handleEditChange}
+              required
+            />
+            <div className="form-buttons">
+              <button type="submit">Save</button>
+              <button type="button" onClick={() => setEditingId(null)}>Cancel</button>
+            </div>
           </form>
         </div>
       )}
