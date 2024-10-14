@@ -1,0 +1,29 @@
+/* src/components/AddData.css */
+.add-data-container {
+    max-width: 400px;
+    margin: 2rem auto;
+    text-align: center;
+  }
+  
+  .data-form input {
+    display: block;
+    width: 100%;
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+  
+  .data-form button {
+    width: 100%;
+    padding: 0.5rem;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+  }
+  
+  .data-form button:hover {
+    background-color: #218838;
+  }
+  
